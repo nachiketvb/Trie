@@ -43,8 +43,8 @@ private:
 	void get_child_containers_(trie_node<KeyType, ContainerType>, std::vector<ContainerType>);
 public:
 	trie() {
-		root = std::make_shared<trie_node<KeyType, ContainerType>>();
-		root->set_complete(false); 
+		root_ = std::make_shared<trie_node<KeyType, ContainerType>>();
+		root_->set_complete(false); 
 	}
 	void insert(const ContainerType &container);
 	bool find(const ContainerType &container) const;
@@ -56,7 +56,7 @@ public:
 template<class KeyType, class ContainerType>
 void trie<KeyType, ContainerType>::insert(const ContainerType &container)
 {
-	auto current_node = root;
+	auto current_node = root_;
 	auto i = begin(container);
 	while(i != end(container)) {
 		auto j = current_node->get_child(*i);
@@ -73,12 +73,11 @@ void trie<KeyType, ContainerType>::insert(const ContainerType &container)
 	}
 	current_node->set_complete(true);
 }
-#endif
 
 template<class KeyType, class ContainerType>
 bool trie<KeyType, ContainerType>::find(const ContainerType &container) const
 {
-	auto current_node = root;
+	auto current_node = root_;
 	for (auto &i: container) {
 		auto j = current_node->get_child(i);
 		if (j == nullptr) {
@@ -94,10 +93,11 @@ bool trie<KeyType, ContainerType>::find(const ContainerType &container) const
 }
 
 template<class KeyType, class ContainerType>
-std::vector<ContainerType> trie<KeyType, ContainerType> containers_with_prefix(const ContainerType &container_prefix) {
+std::vector<ContainerType> trie<KeyType, ContainerType>::containers_with_prefix(const ContainerType &container_prefix) const
+{
 	std::vector<ContainerType> result;
-	auto current_node = root;
-	for (auto &i: container) {
+	auto current_node = root_;
+	for (auto &i: container_prefix) {
 		auto j = current_node->get_child(i);
 		if (j == nullptr) {
 			return result;
